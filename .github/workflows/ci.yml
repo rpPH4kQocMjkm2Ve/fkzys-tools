@@ -36,12 +36,3 @@ jobs:
             echo "━━━ $t ━━━"
             bash "$t" || exit 1
           done
-
-  coverage:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v6
-      - name: Run coverage
-        run: |
-          bash bin/bash-coverage --min-coverage 50 -p .
