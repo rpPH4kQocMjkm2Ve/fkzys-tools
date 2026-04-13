@@ -85,17 +85,11 @@ generate_report() {
         abs_project_dir="${PROJECT_DIR:-}"
     fi
 
-    # Normalize paths to absolute
+    # Normalize paths to absolute and resolve symlinks/../..
     local -A file_covered_normalized=()
     for file in "${!file_covered[@]}"; do
-        local normalized="$file"
-        if [[ "$file" != /* ]]; then
-            if [[ -n "$abs_project_dir" ]]; then
-                normalized="$(realpath -m "$abs_project_dir/$file" 2>/dev/null)" || continue
-            else
-                normalized="$(realpath -m "$file" 2>/dev/null)" || continue
-            fi
-        fi
+        local normalized
+        normalized="$(realpath -m "$file" 2>/dev/null)" || continue
         # Skip test files (they are the runners, not the target)
         [[ "$normalized" == */tests/* ]] && continue
         [[ "$normalized" == */test_*.sh ]] && continue
@@ -324,18 +318,16 @@ parse_args() {
         local init_script="${COVERAGE_DIR}/coverage-init.sh"
         cat > "$init_script" << 'INITEOF'
 _coverage_log() {
-    set +T
-    local file="${BASH_SOURCE[1]:-}"
+    local file="${BASH_SOURCE[1]:-${BASH_SOURCE[0]:-}}"
     local line="${BASH_LINENO[0]:-}"
-    [[ -n "$file" && -n "$line" && -f "$file" ]] || { set -T; return; }
+    [[ -n "$file" && -n "$line" && -f "$file" ]] || return 0
     if [[ -n "${COV_INCLUDE:-}" && ! "$file" =~ $COV_INCLUDE ]]; then
-        set -T; return
+        return 0
     fi
     if [[ -n "${COV_EXCLUDE:-}" && "$file" =~ $COV_EXCLUDE ]]; then
-        set -T; return
+        return 0
     fi
     echo "${file}:${line}" >> "$COV_LOG"
-    set -T
 }
 trap '_coverage_log' DEBUG
 set -T
@@ -389,18 +381,16 @@ run_coverage_command() {
     local init_script="${COVERAGE_DIR}/coverage-init.sh"
     cat > "$init_script" << 'INITEOF'
 _coverage_log() {
-    set +T
-    local file="${BASH_SOURCE[1]:-}"
+    local file="${BASH_SOURCE[1]:-${BASH_SOURCE[0]:-}}"
     local line="${BASH_LINENO[0]:-}"
-    [[ -n "$file" && -n "$line" && -f "$file" ]] || { set -T; return; }
+    [[ -n "$file" && -n "$line" && -f "$file" ]] || return 0
     if [[ -n "${COV_INCLUDE:-}" && ! "$file" =~ $COV_INCLUDE ]]; then
-        set -T; return
+        return 0
     fi
     if [[ -n "${COV_EXCLUDE:-}" && "$file" =~ $COV_EXCLUDE ]]; then
-        set -T; return
+        return 0
     fi
     echo "${file}:${line}" >> "$COV_LOG"
-    set -T
 }
 trap '_coverage_log' DEBUG
 set -T
