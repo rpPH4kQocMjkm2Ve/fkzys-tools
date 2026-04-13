@@ -134,7 +134,7 @@ audit_ci() {
     local found_any=0
     while IFS= read -r -d '' ci_file; do
         found_any=1
-        local rel="${ci_file#${PROJECT_DIR}/}"
+        local rel="${ci_file#"${PROJECT_DIR}"/}"
 
         # Path filtering
         if ! file_contains "$rel" 'paths:'; then
@@ -217,7 +217,7 @@ audit_shell_project() {
 
 audit_shell_entry() {
     local file="$1"
-    local rel="${file#${PROJECT_DIR}/}"
+    local rel="${file#"${PROJECT_DIR}"/}"
     local first
     first="$(head -1 "$file" 2>/dev/null || true)"
 
@@ -253,7 +253,7 @@ audit_shell_entry() {
 
 audit_shell_library() {
     local file="$1"
-    local rel="${file#${PROJECT_DIR}/}"
+    local rel="${file#"${PROJECT_DIR}"/}"
     local first
     first="$(head -1 "$file" 2>/dev/null || true)"
 
