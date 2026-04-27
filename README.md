@@ -6,7 +6,7 @@ Linting, coverage, and project audit tools for the fkzys ecosystem.
 
 ### bash-lint
 
-Linter that checks bash scripts against ecosystem conventions (spec §0.1, §2, §7, §11). See the [specs](https://gitlab.com/fkzys/specs/-/blob/main/README.md) for the full specification.
+Linter that checks bash scripts against ecosystem conventions (spec §0.1, §2, §7, §11). See the [specs](https://github.com/fkzys/specs/blob/main/README.md) for the full specification.
 
 ```bash
 # Check specific files
